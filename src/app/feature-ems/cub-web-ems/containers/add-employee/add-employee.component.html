@@ -1,0 +1,153 @@
+<p>add-employee works!</p>
+
+<div class="container mt-5">
+  <h2>Add Employee</h2>
+  <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            formControlName="name"
+            placeholder="姓名"
+          />
+          <label for="name">姓名</label>
+          <div
+            *ngIf="f.employeeName.touched && f.employeeName.invalid"
+            class="text-danger"
+          >
+            <small *ngIf="f.employeeName.errors?.['required']">需要輸入姓名</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="PID"
+            formControlName="PID"
+            placeholder="身分證字號"
+          />
+          <label for="employeePID">身分證字號</label>
+          <div
+            *ngIf="f.employeePID.touched && f.employeePID.invalid"
+            class="text-danger"
+          >
+            <small *ngIf="f.employeePID.errors?.required"
+              >需要輸入身分證字號</small
+            >
+            <small *ngIf="f.employeePID.errors?.pattern"
+              >身分證字號格式錯誤</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-floating mb-3">
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            formControlName="email"
+            placeholder="Email"
+          />
+          <label for="email">Email</label>
+          <div
+            *ngIf="f.employeeEmail.touched && f.employeeEmail.invalid"
+            class="text-danger"
+          >
+            <small *ngIf="f.employeeEmail.errors?.['required']"
+              >需要填入email</small
+            >
+            <small *ngIf="f.employeeEmail.errors?.['email']"
+              >email格式錯誤</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="address"
+            formControlName="address"
+            placeholder="Address"
+          />
+          <label for="address">住址</label>
+          <div
+            *ngIf="f.employeeAddress.touched && f.employeeAddress.invalid"
+            class="text-danger"
+          >
+            <small *ngIf="f.employeeAddress.errors?.['required']"
+              >Address is required.</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+      <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="phone"
+            formControlName="phone"
+            placeholder="電話號碼"
+          />
+          <label for="phone">電話號碼</label>
+          <div
+            *ngIf="
+              f.employeePhoneNumber.touched && f.employeePhoneNumber.invalid
+            "
+            class="text-danger"
+          >
+            <small *ngIf="f.employeePhoneNumber.errors?.['required']"
+              >請輸入電話號碼</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-floating mb-3">
+          <select class="form-control" id="gender" formControlName="gender">
+            <option value="" disabled selected>選擇性別</option>
+            <option value="m">男</option>
+            <option value="f">女</option>
+          </select>
+          <label for="gender">性別</label>
+          <div
+            *ngIf="f.employeeGender.touched && f.employeeGender.invalid"
+            class="text-danger"
+          >
+            <small *ngIf="f.employeeGender.errors?.['required']"
+              >需要填入性別</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="employeeForm.invalid"
+    >
+      Add Employee
+    </button>
+  </form>
+</div>
