@@ -10,7 +10,7 @@
             type="text"
             class="form-control"
             id="name"
-            formControlName="name"
+            formControlName="employeeName"
             placeholder="姓名"
           />
           <label for="name">姓名</label>
@@ -30,7 +30,7 @@
             type="text"
             class="form-control"
             id="PID"
-            formControlName="PID"
+            formControlName="employeePID"
             placeholder="身分證字號"
           />
           <label for="employeePID">身分證字號</label>
@@ -56,7 +56,7 @@
             type="email"
             class="form-control"
             id="email"
-            formControlName="email"
+            formControlName="employeeEmail"
             placeholder="Email"
           />
           <label for="email">Email</label>
@@ -82,7 +82,7 @@
             type="text"
             class="form-control"
             id="address"
-            formControlName="address"
+            formControlName="employeeAddress"
             placeholder="Address"
           />
           <label for="address">住址</label>
@@ -104,7 +104,7 @@
             type="text"
             class="form-control"
             id="phone"
-            formControlName="phone"
+            formControlName="employeePhoneNumber"
             placeholder="電話號碼"
           />
           <label for="phone">電話號碼</label>
@@ -125,7 +125,7 @@
     <div class="row">
       <div class="col-md-6">
         <div class="form-floating mb-3">
-          <select class="form-control" id="gender" formControlName="gender">
+          <select class="form-control" id="gender" formControlName="employeeGender">
             <option value="" disabled selected>選擇性別</option>
             <option value="m">男</option>
             <option value="f">女</option>
@@ -146,6 +146,7 @@
       type="submit"
       class="btn btn-primary"
       [disabled]="employeeForm.invalid"
+      (onClick)="onSubmit()"
     >
       Add Employee
     </button>

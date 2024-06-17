@@ -22,7 +22,7 @@ export class AddEmployeeComponent implements OnInit {
         [Validators.required, Validators.pattern(/^[A-Z]{1}[0-9]{9}$/)],
       ],
       employeePhoneNumber: ['', [Validators.required]],
-      employeeEmail: ['', [Validators.required]],
+      employeeEmail: ['', [Validators.required, Validators.email]],
       employeeGender: ['', [Validators.required]],
       employeeAddress: ['', [Validators.required]],
     });
@@ -52,6 +52,7 @@ export class AddEmployeeComponent implements OnInit {
       next: (resp) => {
         console.log('added successfully', resp);
         this.employeeForm.reset();
+        alert('新增成功');
       },
       error: (err) => {
         console.log('發生錯誤', err);
