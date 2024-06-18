@@ -4,15 +4,15 @@
   <table class="table">
     <thead>
       <tr>
-        <th scope="col">#</th>
-        <th scope="col">id</th>
-        <th scope="col">Name</th>
-        <th scope="col">PID</th>
+        <!-- <th scope="col">編號</th> -->
+        <th scope="col">員工編號</th>
+        <th scope="col">員工姓名</th>
+        <th scope="col">身分證字號</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let employee of employees; let i = index">
-        <th scope="row">{{ i }}</th>
+        <!-- <th scope="row">{{ i + 1 }}</th> -->
         <td>{{ employee.employeeId }}</td>
         <td>{{ employee.employeeName }}</td>
         <td>{{ employee.employeePID }}</td>

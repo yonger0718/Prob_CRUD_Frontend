@@ -18,7 +18,9 @@
             *ngIf="f.employeeName.touched && f.employeeName.invalid"
             class="text-danger"
           >
-            <small *ngIf="f.employeeName.errors?.['required']">需要輸入姓名</small>
+            <small *ngIf="f.employeeName.errors?.['required']"
+              >姓名不可為空</small
+            >
           </div>
         </div>
       </div>
@@ -39,7 +41,7 @@
             class="text-danger"
           >
             <small *ngIf="f.employeePID.errors?.required"
-              >需要輸入身分證字號</small
+              >身分證字號不可為空</small
             >
             <small *ngIf="f.employeePID.errors?.pattern"
               >身分證字號格式錯誤</small
@@ -65,7 +67,7 @@
             class="text-danger"
           >
             <small *ngIf="f.employeeEmail.errors?.['required']"
-              >需要填入email</small
+              >電子信箱不可為空</small
             >
             <small *ngIf="f.employeeEmail.errors?.['email']"
               >email格式錯誤</small
@@ -91,7 +93,7 @@
             class="text-danger"
           >
             <small *ngIf="f.employeeAddress.errors?.['required']"
-              >Address is required.</small
+              >地址不可為空</small
             >
           </div>
         </div>
@@ -99,7 +101,7 @@
     </div>
     <div class="row">
       <div class="col-md-6">
-      <div class="form-floating mb-3">
+        <div class="form-floating mb-3">
           <input
             type="text"
             class="form-control"
@@ -125,7 +127,11 @@
     <div class="row">
       <div class="col-md-6">
         <div class="form-floating mb-3">
-          <select class="form-control" id="gender" formControlName="employeeGender">
+          <select
+            class="form-control"
+            id="gender"
+            formControlName="employeeGender"
+          >
             <option value="" disabled selected>選擇性別</option>
             <option value="m">男</option>
             <option value="f">女</option>
@@ -148,7 +154,7 @@
       [disabled]="employeeForm.invalid"
       (onClick)="onSubmit()"
     >
-      Add Employee
+      添加員工
     </button>
   </form>
 </div>
