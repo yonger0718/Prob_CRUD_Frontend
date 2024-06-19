@@ -5,12 +5,20 @@ export interface Employee {
   employeeEmail: string;
   employeePhoneNumber: string;
   employeeAddress: string;
-  employeeGender: gender;
+  employeeGender: Gender;
   employeeCreateTime?: Date;
   employeeUpdateTime?: Date;
 }
 
-enum gender {
+export enum Gender {
   male = 'm',
   female = 'f',
+}
+
+export interface EmployeeDTO{
+  employeeName?: string;
+  employeePID?: string;
+  employeeEmail?: string;
+  employeePhoneNumber?: string;
+  employeeAddress?: string;
 }

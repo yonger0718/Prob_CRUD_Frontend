@@ -1,22 +1,174 @@
-<p>employees works!</p>
-
-<div class="container" *ngIf="employees">
-  <table class="table">
-    <thead>
+<div class="card">
+  <p-toolbar styleClass="mb-4 gap-2">
+    <ng-template pTemplate="left">
+      <button
+        pButton
+        pRipple
+        label="New"
+        icon="pi pi-plus"
+        class="p-button-success mr-2"
+        (click)="createNew()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        label="Delete"
+        icon="pi pi-trash"
+        class="p-button-danger"
+        (click)="deleteSelected()"
+        [disabled]="!selectedEmployees || !selectedEmployees.length"
+      ></button>
+    </ng-template>
+  </p-toolbar>
+  <p-table
+    [value]="employees"
+    styleClass="p-datatable-striped"
+    dataKey="employeeId"
+    [paginator]="true"
+    [rows]="10"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[10, 20, 50]"
+  >
+    <ng-template pTemplate="header">
       <tr>
         <!-- <th scope="col">編號</th> -->
-        <th scope="col">員工編號</th>
-        <th scope="col">員工姓名</th>
-        <th scope="col">身分證字號</th>
+        <th scope="col" style="width: 10%">員工編號</th>
+        <th scope="col" style="width: 20%">員工姓名</th>
+        <th scope="col" style="width: 15%">身分證字號</th>
+        <th scope="col" style="width: 10%">性別</th>
+        <th scope="col" style="width: 20%">電子郵件</th>
+        <th scope="col" style="width: 20%">電話號碼</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let employee of employees; let i = index">
+    </ng-template>
+    <ng-template pTemplate="body" let-employee let-i>
+      <tr>
         <!-- <th scope="row">{{ i + 1 }}</th> -->
         <td>{{ employee.employeeId }}</td>
         <td>{{ employee.employeeName }}</td>
         <td>{{ employee.employeePID }}</td>
+        <td [ngSwitch]="employee.employeeGender">
+          <span *ngSwitchCase="gender.male">男</span>
+          <span *ngSwitchCase="gender.female">女</span>
+        </td>
+        <td>{{ employee.employeeEmail }}</td>
+        <td>{{ employee.employeePhoneNumber }}</td>
       </tr>
-    </tbody>
-  </table>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <p-button
+        type="button"
+        icon="pi pi-plus"
+        styleClass="p-button-text"
+      ></p-button>
+    </ng-template>
+    <ng-template pTemplate="paginatorright">
+      <p-button
+        type="button"
+        icon="pi pi-cloud"
+        styleClass="p-button-text"
+      ></p-button>
+    </ng-template>
+  </p-table>
 </div>
+
+<p-dialog
+  [(visible)]="employeeDialog"
+  [style]="{ width: '450px' }"
+  header="編輯員工資訊"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form [formGroup]="employeeForm">
+      <div class="field">
+        <label for="name">員工姓名</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          formControlName="employeeName"
+          autofocus
+        />
+        <div
+          *ngIf="f.employeeName.touched && f.employeeName.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeName.errors?.['required']"
+            >姓名不可為空</small
+          >
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="pid">身分證字號</label>
+        <input
+          type="text"
+          pInputText
+          id="pid"
+          formControlName="employeePID"
+        />
+        <div
+          *ngIf="f.employeePID.touched && f.employeePID.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeePID.errors?.['required']"
+            >身分證字號不可為空</small
+          >
+          <small *ngIf="f.employeePID.errors?.['pattern']"
+            >身分證字號格式錯誤</small
+          >
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">電子郵件</label>
+        <input
+          type="text"
+          pInputText
+          id="email"
+          formControlName="employeeEmail"
+        />
+        <div
+          *ngIf="f.employeeEmail.touched && f.employeeEmail.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeEmail.errors?.['required']"
+            >電子郵件不可為空</small
+          >
+          <small *ngIf="f.employeeEmail.errors?.['email']"
+            >電子郵件格式錯誤</small
+          >
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="phone">電話號碼</label>
+        <input
+          type="text"
+          pInputText
+          id="phone"
+          formControlName="employeePhoneNumber"
+        />
+        <div
+          *ngIf="f.employeePhoneNumber.touched && f.employeePhoneNumber.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeePhoneNumber.errors?.['required']"
+            >電話號碼不可為空</small
+          >
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="gender">性別</label>
+        <p-dropdown
+          id="gender"
+          formControlName="employeeGender"
+          [options]="gender | keyvalue"
+          optionLabel="key"
+        ></p-dropdown>
+      </div>
+    </form>
+  </ng-template>
+</p-dialog>
