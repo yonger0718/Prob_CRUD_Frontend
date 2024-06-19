@@ -16,9 +16,11 @@ export enum Gender {
 }
 
 export interface EmployeeDTO{
+  employeeId?: number;
   employeeName?: string;
   employeePID?: string;
   employeeEmail?: string;
   employeePhoneNumber?: string;
   employeeAddress?: string;
+  employeeGender?: Gender;
 }

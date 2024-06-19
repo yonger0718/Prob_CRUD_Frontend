@@ -53,6 +53,21 @@
         </td>
         <td>{{ employee.employeeEmail }}</td>
         <td>{{ employee.employeePhoneNumber }}</td>
+        <td>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-success mr-2"
+            (click)="editEmployee(employee)"
+          ></button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="deleteEmployee(employee)"
+          ></button>
       </tr>
     </ng-template>
     <ng-template pTemplate="paginatorleft">
@@ -75,12 +90,12 @@
 <p-dialog
   [(visible)]="employeeDialog"
   [style]="{ width: '450px' }"
-  header="編輯員工資訊"
+  [header]="header"
   [modal]="true"
   class="p-fluid"
 >
   <ng-template pTemplate="content">
-    <form [formGroup]="employeeForm">
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
       <div class="field">
         <label for="name">員工姓名</label>
         <input
@@ -102,12 +117,7 @@
 
       <div class="field">
         <label for="pid">身分證字號</label>
-        <input
-          type="text"
-          pInputText
-          id="pid"
-          formControlName="employeePID"
-        />
+        <input type="text" pInputText id="pid" formControlName="employeePID" />
         <div
           *ngIf="f.employeePID.touched && f.employeePID.invalid"
           class="text-danger"
@@ -161,14 +171,54 @@
       </div>
 
       <div class="field">
-        <label for="gender">性別</label>
-        <p-dropdown
-          id="gender"
-          formControlName="employeeGender"
-          [options]="gender | keyvalue"
-          optionLabel="key"
-        ></p-dropdown>
+        <label for="address">地址</label>
+        <input
+          type="text"
+          pInputText
+          id="address"
+          formControlName="employeeAddress"
+        />
+        <div
+          *ngIf="f.employeeAddress.touched && f.employeeAddress.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeAddress.errors?.['required']"
+            >地址不可為空</small
+          >
+        </div>
       </div>
+
+      <div class="field">
+        <label for="gender">性別</label>
+        <div class="d-flex align-items-center">
+        <div class="form-check me-3">
+          <p-radioButton
+            name="employeeGender"
+            formControlName="employeeGender"
+            value="m"
+          ></p-radioButton>
+          <label class="form-check-label" for="employeeGender.male">男</label>
+        </div>
+        <div class="form-check">
+          <p-radioButton
+            name="employeeGender"
+            formControlName="employeeGender"
+            value="f"
+          ></p-radioButton>
+          <label class="form-check-label" for="employeeGender.female">女</label>
+        </div></div>
+        <div
+          *ngIf="f.employeeGender.touched && f.employeeGender.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeGender.errors?.['required']"
+            >性別不可為空</small
+          >
+        </div>
+      </div>
+      <p-button pRipple icon="pi pi-check" type="submit" label="送出"></p-button>
     </form>
   </ng-template>
 </p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
