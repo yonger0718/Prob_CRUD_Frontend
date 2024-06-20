@@ -2,10 +2,10 @@
 
 ## Angular targets
   - [x] Angular CLI 
-  - [ ] Knowing Angular components, class, template and decorators
-  - [ ] Data binding
-  - [ ] Routing
+  - [x] Knowing Angular components, class, template and decorators
+  - [x] Data binding
+  - [x] Routing
   - [ ] Events
-  - [ ] Pipeline
-  - [ ] API connections
+  - [x] Pipeline
+  - [x] API connections
   - [ ] Follow Guideline and refactor code
