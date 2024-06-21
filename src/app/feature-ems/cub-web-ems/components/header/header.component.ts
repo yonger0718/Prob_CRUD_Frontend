@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -11,6 +12,7 @@ import { MenuItem } from 'primeng/api';
 })
 export class HeaderComponent implements OnInit {
   items: MenuItem[] = [];
+  private router = inject(Router);
 
   constructor() {}
 
@@ -28,10 +30,7 @@ export class HeaderComponent implements OnInit {
           {
             label: '新增',
             icon: 'pi pi-fw pi-plus',
-            routerLink: '/employee/add',
-            queryParams: {
-              add: true
-            }
+            command: () => this.addNewEmployee(),
           },
           // {
             // label: '查詢',
@@ -53,8 +52,8 @@ export class HeaderComponent implements OnInit {
       },
     ];
   }
-
-  edit() {
-    console.log('test');
+  addNewEmployee(): void {
+    this.router.navigate(['employee'], { queryParams: { add: true } });
   }
+
 }

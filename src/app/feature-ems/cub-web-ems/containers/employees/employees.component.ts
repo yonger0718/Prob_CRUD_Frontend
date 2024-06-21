@@ -22,7 +22,8 @@ import {
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToastModule } from 'primeng/toast';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { validatePID } from '../../utils/validator';
 
 @Component({
   standalone: true,
@@ -48,6 +49,7 @@ export class EmployeesComponent implements OnInit {
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   employeeForm: FormGroup;
 
   selectedEmployees: Employee[] = []; // 提供一次性刪除用
@@ -66,7 +68,7 @@ export class EmployeesComponent implements OnInit {
       employeeName: ['', [Validators.required]],
       employeePID: [
         '',
-        [Validators.required, Validators.pattern(/^[A-Z]\d{9}$/)],
+        [Validators.required, validatePID()],
       ],
       employeePhoneNumber: [
         '',
@@ -93,6 +95,10 @@ export class EmployeesComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       if (params['add'] === 'true') {
         this.createNew();
+        this.router.navigate(['employee'], {
+          queryParams: { add: null },
+          queryParamsHandling: 'merge',
+        });
       }
     });
   }
@@ -113,55 +119,62 @@ export class EmployeesComponent implements OnInit {
     if (this.employeeForm.invalid) {
       return;
     }
-    if (this.employee.employeeId === undefined) {
-      // 非修改則不會有employee傳入 -> no default value = undefined
-      this.employeeServices.addEmployee(this.employeeForm.value).subscribe({
-        next: () => {
-          this.getEmployees();
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Successful',
-            detail: '新增員工成功',
-            life: 3000,
+    this.confirmationService.confirm({
+      message: '確定要送出嗎?',
+      accept: () => {
+        if (this.employee.employeeId === undefined) {
+          // 非修改則不會有employee傳入 -> no default value = undefined
+          this.employeeServices.addEmployee(this.employeeForm.value).subscribe({
+            next: (emp) => {
+              this.getEmployees();
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Successful',
+                detail: '新增員工成功: id為{ ' + emp.employeeId + ' }',
+                life: 3000,
+              });
+              this.employeeDialog = false;
+              this.employeeForm.reset();
+            },
+            error: (msg) => {
+              console.log(msg);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: '新增員工失敗: ' + msg.error,
+                life: 3000,
+              });
+            },
           });
-          this.employeeDialog = false;
-          this.employeeForm.reset();
-        },
-        error: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: '新增員工失敗',
-            life: 3000,
-          });
-        },
-      });
-    } else {
-      this.employeeServices
-        .updateEmployee(this.employee.employeeId, this.employeeForm.value)
-        .subscribe({
-          next: () => {
-            this.getEmployees();
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Successful',
-              detail: '編輯員工成功',
-              life: 3000,
+        } else {
+          this.employeeServices
+            .updateEmployee(this.employee.employeeId, this.employeeForm.value)
+            .subscribe({
+              next: () => {
+                this.getEmployees();
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Successful',
+                  detail: '編輯員工成功',
+                  life: 3000,
+                });
+                this.employeeDialog = false;
+                this.employeeForm.reset();
+              },
+              error: (msg) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: '編輯員工失敗: ' + msg.error,
+                  life: 3000,
+                });
+              },
             });
-            this.employeeDialog = false;
-            this.employeeForm.reset();
-          },
-          error: () => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: '編輯員工失敗',
-              life: 3000,
-            });
-          },
-        });
-    }
+        }
+      },
+    });
   }
+
   deleteEmployee(employee: EmployeeDTO) {
     if (employee.employeeId === undefined) {
       return;
@@ -193,7 +206,26 @@ export class EmployeesComponent implements OnInit {
     this.employeeDialog = true;
   }
   deleteSelected() {
-    console.log(this.selectedEmployees);
-    throw new Error('Method not implemented.');
+    this.confirmationService.confirm({
+      message: '確定要刪除嗎?',
+      header: '確認',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.selectedEmployees.forEach((element) => {
+          this.employeeServices
+            .deleteEmployee(element.employeeId!) //assert non-null to bypass the undefined check
+            .subscribe(() => {
+              this.selectedEmployees = [];
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Successful',
+                detail: '刪除員工成功',
+                life: 3000,
+              });
+              this.getEmployees();
+            });
+        });
+      },
+    });
   }
 }

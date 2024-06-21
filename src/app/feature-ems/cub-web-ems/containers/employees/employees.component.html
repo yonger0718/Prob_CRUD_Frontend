@@ -39,6 +39,8 @@
     [tableStyle]="{ 'min-width': '50rem' }"
     [(selection)]="selectedEmployees"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [sortField]="'employeeId'"
+    [sortOrder]="1"
     [showCurrentPageReport]="true"
   >
     <ng-template pTemplate="caption">
@@ -58,7 +60,7 @@
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 2.25rem">
+        <th scope="col" style="width: 2.25rem">
           <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
         </th>
         <th
@@ -167,7 +169,7 @@
 >
   <ng-template pTemplate="content">
     <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
-      <div class="field">
+      <div class="form-group">
         <label for="name">員工姓名</label>
         <input
           type="text"
@@ -186,7 +188,7 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="form-group">
         <label for="pid">身分證字號</label>
         <input type="text" pInputText id="pid" formControlName="employeePID" />
         <div
@@ -196,13 +198,13 @@
           <small *ngIf="f.employeePID.errors?.['required']"
             >身分證字號不可為空</small
           >
-          <small *ngIf="f.employeePID.errors?.['pattern']"
+          <small *ngIf="f.employeePID.errors?.['invalidPID']"
             >身分證字號格式錯誤</small
           >
         </div>
       </div>
 
-      <div class="field">
+      <div class="form-group">
         <label for="email">電子郵件</label>
         <input
           type="text"
@@ -223,7 +225,7 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="form-group">
         <label for="phone">電話號碼</label>
         <input
           type="text"
@@ -244,7 +246,7 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="form-group">
         <label for="address">地址</label>
         <input
           type="text"
@@ -262,7 +264,7 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="form-group">
         <label for="employeeGender">性別</label>
         <div class="d-flex align-items-center">
           <div class="form-check me-3">
@@ -293,12 +295,14 @@
           >
         </div>
       </div>
-      <p-button
-        pRipple
-        icon="pi pi-check"
-        type="submit"
-        label="送出"
-      ></p-button>
+      <div class="form-actions">
+        <p-button
+          pRipple
+          icon="pi pi-check"
+          type="submit"
+          label="送出"
+        ></p-button>
+      </div>
     </form>
   </ng-template>
 </p-dialog>
