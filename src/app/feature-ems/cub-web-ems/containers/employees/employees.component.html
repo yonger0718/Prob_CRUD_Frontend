@@ -1,10 +1,12 @@
+<p-toast></p-toast>
+
 <div class="card">
   <p-toolbar styleClass="mb-4 gap-2">
     <ng-template pTemplate="left">
       <button
         pButton
         pRipple
-        label="New"
+        label="新增"
         icon="pi pi-plus"
         class="p-button-success mr-2"
         (click)="createNew()"
@@ -12,7 +14,6 @@
       <button
         pButton
         pRipple
-        label="Delete"
         icon="pi pi-trash"
         class="p-button-danger"
         (click)="deleteSelected()"
@@ -21,29 +22,96 @@
     </ng-template>
   </p-toolbar>
   <p-table
+    #dt
     [value]="employees"
+    [globalFilterFields]="[
+      'employeeId',
+      'employeeName',
+      'employeePID',
+      'employeePhoneNumber'
+    ]"
     styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '60rem' }"
     dataKey="employeeId"
     [paginator]="true"
     [rows]="10"
+    [rowHover]="true"
     [tableStyle]="{ 'min-width': '50rem' }"
+    [(selection)]="selectedEmployees"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    [rowsPerPageOptions]="[10, 20, 50]"
+    [showCurrentPageReport]="true"
   >
+    <ng-template pTemplate="caption">
+      <div class="d-flex align-items-center justify-content-between">
+        <h5 class="m-0">員工管理系統</h5>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            #search
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal(search.value, 'contains')"
+            placeholder="搜尋..."
+          />
+        </span>
+      </div>
+    </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <!-- <th scope="col">編號</th> -->
-        <th scope="col" style="width: 10%">員工編號</th>
-        <th scope="col" style="width: 20%">員工姓名</th>
-        <th scope="col" style="width: 15%">身分證字號</th>
-        <th scope="col" style="width: 10%">性別</th>
-        <th scope="col" style="width: 20%">電子郵件</th>
-        <th scope="col" style="width: 20%">電話號碼</th>
+        <th style="width: 2.25rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th
+          pSortableColumn="employeeId"
+          scope="col"
+          style="width: 10%; min-width: 5rem"
+        >
+          員工編號<p-sortIcon field="employeeId"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeeName"
+          scope="col"
+          style="width: 20%; min-width: 10rem"
+        >
+          員工姓名<p-sortIcon field="employeeName"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeePID"
+          scope="col"
+          style="width: 15%; min-width: 10rem"
+        >
+          身分證字號<p-sortIcon field="employeePID"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeeGender"
+          scope="col"
+          style="width: 10%; min-width: 5rem"
+        >
+          性別<p-sortIcon field="employeeGender"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeeEmail"
+          scope="col"
+          style="width: 15%; min-width: 10rem"
+        >
+          電子郵件<p-sortIcon field="employeeEmail"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeePhoneNumber"
+          scope="col"
+          style="width: 15%; min-width: 5rem"
+        >
+          電話號碼<p-sortIcon field="employeePhoneNumber"></p-sortIcon>
+        </th>
+        <th scope="col" style="width: 5%; min-width: 5rem"></th>
+        <th scope="col" style="width: 5%; min-width: 5rem"></th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-employee let-i>
+    <ng-template pTemplate="body" let-employee>
       <tr>
-        <!-- <th scope="row">{{ i + 1 }}</th> -->
+        <td>
+          <p-tableCheckbox [value]="employee"></p-tableCheckbox>
+        </td>
         <td>{{ employee.employeeId }}</td>
         <td>{{ employee.employeeName }}</td>
         <td>{{ employee.employeePID }}</td>
@@ -61,6 +129,8 @@
             class="p-button-rounded p-button-success mr-2"
             (click)="editEmployee(employee)"
           ></button>
+        </td>
+        <td>
           <button
             pButton
             pRipple
@@ -68,6 +138,7 @@
             class="p-button-rounded p-button-warning"
             (click)="deleteEmployee(employee)"
           ></button>
+        </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="paginatorleft">
@@ -167,6 +238,9 @@
           <small *ngIf="f.employeePhoneNumber.errors?.['required']"
             >電話號碼不可為空</small
           >
+          <small *ngIf="f.employeePhoneNumber.errors?.['phone']"
+            >手機號碼格式錯誤</small
+          >
         </div>
       </div>
 
@@ -189,24 +263,27 @@
       </div>
 
       <div class="field">
-        <label for="gender">性別</label>
+        <label for="employeeGender">性別</label>
         <div class="d-flex align-items-center">
-        <div class="form-check me-3">
-          <p-radioButton
-            name="employeeGender"
-            formControlName="employeeGender"
-            value="m"
-          ></p-radioButton>
-          <label class="form-check-label" for="employeeGender.male">男</label>
+          <div class="form-check me-3">
+            <p-radioButton
+              name="employeeGender"
+              formControlName="employeeGender"
+              value="m"
+            ></p-radioButton>
+            <label class="form-check-label" for="employeeGender.male">男</label>
+          </div>
+          <div class="form-check">
+            <p-radioButton
+              name="employeeGender"
+              formControlName="employeeGender"
+              value="f"
+            ></p-radioButton>
+            <label class="form-check-label" for="employeeGender.female"
+              >女</label
+            >
+          </div>
         </div>
-        <div class="form-check">
-          <p-radioButton
-            name="employeeGender"
-            formControlName="employeeGender"
-            value="f"
-          ></p-radioButton>
-          <label class="form-check-label" for="employeeGender.female">女</label>
-        </div></div>
         <div
           *ngIf="f.employeeGender.touched && f.employeeGender.invalid"
           class="text-danger"
@@ -216,7 +293,12 @@
           >
         </div>
       </div>
-      <p-button pRipple icon="pi pi-check" type="submit" label="送出"></p-button>
+      <p-button
+        pRipple
+        icon="pi pi-check"
+        type="submit"
+        label="送出"
+      ></p-button>
     </form>
   </ng-template>
 </p-dialog>

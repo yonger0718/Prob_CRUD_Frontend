@@ -10,6 +10,13 @@ const routes: Routes = [
         './feature-ems/cub-web-ems/pages/employee-list.page/employee-list.page.component'
       ).then((m) => m.EmployeeListPageComponent),
   },
+  {
+    path: 'employee/add',
+    loadComponent: () =>
+      import(
+        './feature-ems/cub-web-ems/pages/employee-list.page/employee-list.page.component'
+      ).then((m) => m.EmployeeListPageComponent),
+  },
 ];
 
 @NgModule({

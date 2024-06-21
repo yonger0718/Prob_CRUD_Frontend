@@ -23,29 +23,32 @@ export class HeaderComponent implements OnInit {
           {
             label: '列表',
             icon: 'pi pi-fw pi-list',
-            routerLink: '/',
+            routerLink: '/employee',
           },
           {
             label: '新增',
             icon: 'pi pi-fw pi-plus',
-            routerLink: 'employee-add',
+            routerLink: '/employee/add',
+            queryParams: {
+              add: true
+            }
           },
-          {
-            label: '查詢',
-            icon: 'pi pi-fw pi-users',
-            items: [
-              {
-                label: '原編查詢',
-                icon: 'pi pi-fw pi-search',
-                routerLink: 'employee/:id',
-              },
-              {
-                label: '姓名查詢',
-                icon: 'pi pi-fw pi-search',
-                routerLink: 'employee/:name',
-              },
-            ]
-          },
+          // {
+            // label: '查詢',
+            // icon: 'pi pi-fw pi-users',
+            // items: [
+              // {
+                // label: '原編查詢',
+                // icon: 'pi pi-fw pi-search',
+                // routerLink: 'employee/:id',
+              // },
+              // {
+                // label: '姓名查詢',
+                // icon: 'pi pi-fw pi-search',
+                // routerLink: 'employee/:name',
+              // },
+            // ]
+          // },
         ],
       },
     ];
