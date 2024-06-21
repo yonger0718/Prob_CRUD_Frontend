@@ -1,0 +1,310 @@
+<p-toast></p-toast>
+
+<div class="card">
+  <p-toolbar styleClass="mb-4 gap-2">
+    <ng-template pTemplate="left">
+      <button
+        pButton
+        pRipple
+        label="新增"
+        icon="pi pi-plus"
+        class="p-button-success mr-2"
+        (click)="createNew()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        icon="pi pi-trash"
+        class="p-button-danger"
+        (click)="deleteSelected()"
+        [disabled]="!selectedEmployees || !selectedEmployees.length"
+      ></button>
+    </ng-template>
+  </p-toolbar>
+  <p-table
+    #dt
+    [value]="employees"
+    [globalFilterFields]="[
+      'employeeId',
+      'employeeName',
+      'employeePID',
+      'employeePhoneNumber'
+    ]"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    dataKey="employeeId"
+    [paginator]="true"
+    [rows]="10"
+    [rowHover]="true"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [(selection)]="selectedEmployees"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [sortField]="'employeeId'"
+    [sortOrder]="1"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="d-flex align-items-center justify-content-between">
+        <h5 class="m-0">員工管理系統</h5>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            #search
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal(search.value, 'contains')"
+            placeholder="搜尋..."
+          />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col" style="width: 2.25rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th
+          pSortableColumn="employeeId"
+          scope="col"
+          style="width: 10%; min-width: 5rem"
+        >
+          員工編號<p-sortIcon field="employeeId"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeeName"
+          scope="col"
+          style="width: 20%; min-width: 10rem"
+        >
+          員工姓名<p-sortIcon field="employeeName"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeePID"
+          scope="col"
+          style="width: 15%; min-width: 10rem"
+        >
+          身分證字號<p-sortIcon field="employeePID"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeeGender"
+          scope="col"
+          style="width: 10%; min-width: 5rem"
+        >
+          性別<p-sortIcon field="employeeGender"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeeEmail"
+          scope="col"
+          style="width: 15%; min-width: 10rem"
+        >
+          電子郵件<p-sortIcon field="employeeEmail"></p-sortIcon>
+        </th>
+        <th
+          pSortableColumn="employeePhoneNumber"
+          scope="col"
+          style="width: 15%; min-width: 5rem"
+        >
+          電話號碼<p-sortIcon field="employeePhoneNumber"></p-sortIcon>
+        </th>
+        <th scope="col" style="width: 5%; min-width: 5rem"></th>
+        <th scope="col" style="width: 5%; min-width: 5rem"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-employee>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="employee"></p-tableCheckbox>
+        </td>
+        <td>{{ employee.employeeId }}</td>
+        <td>{{ employee.employeeName }}</td>
+        <td>{{ employee.employeePID }}</td>
+        <td [ngSwitch]="employee.employeeGender">
+          <span *ngSwitchCase="gender.male">男</span>
+          <span *ngSwitchCase="gender.female">女</span>
+        </td>
+        <td>{{ employee.employeeEmail }}</td>
+        <td>{{ employee.employeePhoneNumber }}</td>
+        <td>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-success mr-2"
+            (click)="editEmployee(employee)"
+          ></button>
+        </td>
+        <td>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="deleteEmployee(employee)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+      <p-button
+        type="button"
+        icon="pi pi-plus"
+        styleClass="p-button-text"
+      ></p-button>
+    </ng-template>
+    <ng-template pTemplate="paginatorright">
+      <p-button
+        type="button"
+        icon="pi pi-cloud"
+        styleClass="p-button-text"
+      ></p-button>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [(visible)]="employeeDialog"
+  [style]="{ width: '450px' }"
+  [header]="header"
+  [modal]="true"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">員工姓名</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          formControlName="employeeName"
+          autofocus
+        />
+        <div
+          *ngIf="f.employeeName.touched && f.employeeName.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeName.errors?.['required']"
+            >姓名不可為空</small
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="pid">身分證字號</label>
+        <input type="text" pInputText id="pid" formControlName="employeePID" />
+        <div
+          *ngIf="f.employeePID.touched && f.employeePID.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeePID.errors?.['required']"
+            >身分證字號不可為空</small
+          >
+          <small *ngIf="f.employeePID.errors?.['invalidPID']"
+            >身分證字號格式錯誤</small
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">電子郵件</label>
+        <input
+          type="text"
+          pInputText
+          id="email"
+          formControlName="employeeEmail"
+        />
+        <div
+          *ngIf="f.employeeEmail.touched && f.employeeEmail.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeEmail.errors?.['required']"
+            >電子郵件不可為空</small
+          >
+          <small *ngIf="f.employeeEmail.errors?.['email']"
+            >電子郵件格式錯誤</small
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">電話號碼</label>
+        <input
+          type="text"
+          pInputText
+          id="phone"
+          formControlName="employeePhoneNumber"
+        />
+        <div
+          *ngIf="f.employeePhoneNumber.touched && f.employeePhoneNumber.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeePhoneNumber.errors?.['required']"
+            >電話號碼不可為空</small
+          >
+          <small *ngIf="f.employeePhoneNumber.errors?.['phone']"
+            >手機號碼格式錯誤</small
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="address">地址</label>
+        <input
+          type="text"
+          pInputText
+          id="address"
+          formControlName="employeeAddress"
+        />
+        <div
+          *ngIf="f.employeeAddress.touched && f.employeeAddress.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeAddress.errors?.['required']"
+            >地址不可為空</small
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="employeeGender">性別</label>
+        <div class="d-flex align-items-center">
+          <div class="form-check me-3">
+            <p-radioButton
+              name="employeeGender"
+              formControlName="employeeGender"
+              value="m"
+            ></p-radioButton>
+            <label class="form-check-label" for="employeeGender.male">男</label>
+          </div>
+          <div class="form-check">
+            <p-radioButton
+              name="employeeGender"
+              formControlName="employeeGender"
+              value="f"
+            ></p-radioButton>
+            <label class="form-check-label" for="employeeGender.female"
+              >女</label
+            >
+          </div>
+        </div>
+        <div
+          *ngIf="f.employeeGender.touched && f.employeeGender.invalid"
+          class="text-danger"
+        >
+          <small *ngIf="f.employeeGender.errors?.['required']"
+            >性別不可為空</small
+          >
+        </div>
+      </div>
+      <div class="form-actions">
+        <p-button
+          pRipple
+          icon="pi pi-check"
+          type="submit"
+          label="送出"
+        ></p-button>
+      </div>
+    </form>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
