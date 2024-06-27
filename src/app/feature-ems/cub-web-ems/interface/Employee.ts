@@ -8,6 +8,7 @@ export interface Employee {
   employeeGender: Gender;
   employeeCreateTime?: Date;
   employeeUpdateTime?: Date;
+  employeeImage?: string;
 }
 
 export enum Gender {

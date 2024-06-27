@@ -12,6 +12,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { FileUploadModule } from 'primeng/fileupload';
 import {
   FormBuilder,
   FormGroup,
@@ -22,8 +23,10 @@ import {
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToastModule } from 'primeng/toast';
+import { AvatarModule } from 'primeng/avatar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { validatePID } from '../../utils/validator';
+import { environment } from 'src/environments/environment';
 
 @Component({
   standalone: true,
@@ -42,9 +45,14 @@ import { validatePID } from '../../utils/validator';
     RadioButtonModule,
     ConfirmDialogModule,
     ToastModule,
+    AvatarModule,
+    FileUploadModule,
   ],
 })
 export class EmployeesComponent implements OnInit {
+onProgress($event: any) {
+throw new Error('Method not implemented.');
+}
   private employeeServices = inject(EmployeeServices);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
@@ -58,6 +66,8 @@ export class EmployeesComponent implements OnInit {
   gender = Gender; // Enum
   employeeDialog: boolean = false; // 跳出顯示輸入介面
   header: string = '';
+  selectedFile: File | null = null;
+  storageApi = environment.storageUrl;
 
   /**
    * 構建表單和他的驗證方法
@@ -66,10 +76,7 @@ export class EmployeesComponent implements OnInit {
   constructor(private formBuilder: FormBuilder) {
     this.employeeForm = this.formBuilder.group({
       employeeName: ['', [Validators.required]],
-      employeePID: [
-        '',
-        [Validators.required, validatePID()],
-      ],
+      employeePID: ['', [Validators.required, validatePID()]],
       employeePhoneNumber: [
         '',
         [Validators.required, Validators.pattern(/^09\d{8}$/)],
@@ -91,6 +98,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(Date.now().toString());
     this.getEmployees(); // 先載入所有資料
     this.route.queryParams.subscribe((params) => {
       if (params['add'] === 'true') {
@@ -115,6 +123,10 @@ export class EmployeesComponent implements OnInit {
     this.header = '新增員工資訊';
     this.employeeDialog = true;
   }
+
+  onUpload($event: any) {
+    this.selectedFile = $event.files[0];
+  }
   onSubmit() {
     if (this.employeeForm.invalid) {
       return;
@@ -124,6 +136,15 @@ export class EmployeesComponent implements OnInit {
       accept: () => {
         if (this.employee.employeeId === undefined) {
           // 非修改則不會有employee傳入 -> no default value = undefined
+          const formData: FormData = new FormData();
+          formData.append('employee', JSON.stringify(this.employeeForm.value));
+          if (this.selectedFile) {
+            formData.append(
+              'image',
+              this.selectedFile,
+              Date.now().toString() + this.selectedFile.name.split('.').pop() //確保不會有奇怪的檔案名稱
+            );
+          }
           this.employeeServices.addEmployee(this.employeeForm.value).subscribe({
             next: (emp) => {
               this.getEmployees();

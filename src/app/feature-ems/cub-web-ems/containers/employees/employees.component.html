@@ -70,10 +70,11 @@
         >
           員工編號<p-sortIcon field="employeeId"></p-sortIcon>
         </th>
+        <th scope="col" style="width: 5%; min-width: 5rem">圖片</th>
         <th
           pSortableColumn="employeeName"
           scope="col"
-          style="width: 20%; min-width: 10rem"
+          style="width: 15%; min-width: 10rem"
         >
           員工姓名<p-sortIcon field="employeeName"></p-sortIcon>
         </th>
@@ -115,6 +116,23 @@
           <p-tableCheckbox [value]="employee"></p-tableCheckbox>
         </td>
         <td>{{ employee.employeeId }}</td>
+        <td>
+          <p-avatar
+            [image]="
+              employee.imgUrl
+                ? storageApi + employee.imgUrl
+                : '/assets/default_user.jpg'
+            "
+            shape="circle"
+            size="xlarge"
+            styleClass="mr-2"
+          >
+            <ng-template let-file pTemplate="file">
+              <div>Additional content.</div>
+            </ng-template>
+          </p-avatar>
+        </td>
+
         <td>{{ employee.employeeName }}</td>
         <td>{{ employee.employeePID }}</td>
         <td [ngSwitch]="employee.employeeGender">
@@ -186,6 +204,22 @@
             >姓名不可為空</small
           >
         </div>
+      </div>
+
+      <div class="form-group">
+        <label for="imgUrl">員工照片</label>
+        <p-fileUpload
+          #fubauto
+          mode="basic"
+          [customUpload]="true"
+          [maxFileSize]="10000000"
+          id="imgUrl"
+          name="image[]"
+          [auto]="true"
+          chooseLabel="選擇圖片"
+          accept="image/*"
+          (uploadHandler)="onUpload($event)"
+        ></p-fileUpload>
       </div>
 
       <div class="form-group">
@@ -275,7 +309,7 @@
             ></p-radioButton>
             <label class="form-check-label" for="employeeGender.male">男</label>
           </div>
-          <div class="form-check">
+          <div class="form-check me-3">
             <p-radioButton
               name="employeeGender"
               formControlName="employeeGender"
@@ -295,14 +329,16 @@
           >
         </div>
       </div>
-      <div class="form-actions">
-        <p-button
-          pRipple
-          icon="pi pi-check"
-          type="submit"
-          label="送出"
-        ></p-button>
-      </div>
+      <p-footer>
+        <div class="form-actions">
+          <p-button
+            pRipple
+            icon="pi pi-check"
+            type="submit"
+            label="送出"
+          ></p-button>
+        </div>
+      </p-footer>
     </form>
   </ng-template>
 </p-dialog>
