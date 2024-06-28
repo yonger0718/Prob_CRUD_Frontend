@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { EmployeeServices } from '../../services/EmployeeServices';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import {
   Employee,
   EmployeeDTO,
@@ -12,7 +12,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { FileUploadModule } from 'primeng/fileupload';
+import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import {
   FormBuilder,
   FormGroup,
@@ -50,9 +50,6 @@ import { environment } from 'src/environments/environment';
   ],
 })
 export class EmployeesComponent implements OnInit {
-onProgress($event: any) {
-throw new Error('Method not implemented.');
-}
   private employeeServices = inject(EmployeeServices);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
@@ -68,6 +65,8 @@ throw new Error('Method not implemented.');
   header: string = '';
   selectedFile: File | null = null;
   storageApi = environment.storageUrl;
+
+  @ViewChild('fubauto') fileUpload!: FileUpload;
 
   /**
    * 構建表單和他的驗證方法
@@ -98,7 +97,6 @@ throw new Error('Method not implemented.');
   }
 
   ngOnInit(): void {
-    console.log(Date.now().toString());
     this.getEmployees(); // 先載入所有資料
     this.route.queryParams.subscribe((params) => {
       if (params['add'] === 'true') {
@@ -122,10 +120,12 @@ throw new Error('Method not implemented.');
     this.employeeForm.reset();
     this.header = '新增員工資訊';
     this.employeeDialog = true;
+    this.selectedFile = null;
   }
 
   onUpload($event: any) {
     this.selectedFile = $event.files[0];
+    this.fileUpload.clear(); // 要重新選擇需要重置，要重置需要先去取得ViewChild
   }
   onSubmit() {
     if (this.employeeForm.invalid) {
@@ -134,18 +134,23 @@ throw new Error('Method not implemented.');
     this.confirmationService.confirm({
       message: '確定要送出嗎?',
       accept: () => {
+        const formData: FormData = new FormData();
+        formData.append(
+          'employee',
+          new Blob([JSON.stringify(this.employeeForm.value)], {
+            type: 'application/json',
+          })
+        );
+        if (this.selectedFile) {
+          formData.append(
+            'image',
+            this.selectedFile,
+            Date.now().toString() + "." + this.selectedFile.name.split('.').pop() //確保不會有奇怪的檔案名稱
+          );
+        }
         if (this.employee.employeeId === undefined) {
           // 非修改則不會有employee傳入 -> no default value = undefined
-          const formData: FormData = new FormData();
-          formData.append('employee', JSON.stringify(this.employeeForm.value));
-          if (this.selectedFile) {
-            formData.append(
-              'image',
-              this.selectedFile,
-              Date.now().toString() + this.selectedFile.name.split('.').pop() //確保不會有奇怪的檔案名稱
-            );
-          }
-          this.employeeServices.addEmployee(this.employeeForm.value).subscribe({
+          this.employeeServices.addEmployee(formData).subscribe({
             next: (emp) => {
               this.getEmployees();
               this.messageService.add({
@@ -169,7 +174,7 @@ throw new Error('Method not implemented.');
           });
         } else {
           this.employeeServices
-            .updateEmployee(this.employee.employeeId, this.employeeForm.value)
+            .updateEmployee(this.employee.employeeId, formData)
             .subscribe({
               next: () => {
                 this.getEmployees();
@@ -225,6 +230,7 @@ throw new Error('Method not implemented.');
     this.employeeForm.patchValue(employee);
     this.header = '編輯員工資訊';
     this.employeeDialog = true;
+    this.selectedFile = null;
   }
   deleteSelected() {
     this.confirmationService.confirm({

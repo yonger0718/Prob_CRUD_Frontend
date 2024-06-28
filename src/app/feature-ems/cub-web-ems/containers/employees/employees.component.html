@@ -127,9 +127,6 @@
             size="xlarge"
             styleClass="mr-2"
           >
-            <ng-template let-file pTemplate="file">
-              <div>Additional content.</div>
-            </ng-template>
           </p-avatar>
         </td>
 
@@ -214,12 +211,16 @@
           [customUpload]="true"
           [maxFileSize]="10000000"
           id="imgUrl"
-          name="image[]"
+          name="image"
           [auto]="true"
           chooseLabel="選擇圖片"
           accept="image/*"
           (uploadHandler)="onUpload($event)"
-        ></p-fileUpload>
+        >
+        </p-fileUpload>
+        <div *ngIf="selectedFile">
+          <p>{{ selectedFile.name }}</p>
+        </div>
       </div>
 
       <div class="form-group">
