@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://employee-service:8080',
+  apiUrl: '',
   storageUrl: 'https://storage.googleapis.com/prob_prod/',
 };

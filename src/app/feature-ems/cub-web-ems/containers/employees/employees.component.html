@@ -202,24 +202,25 @@
           >
         </div>
       </div>
-
-      <div class="form-group">
+      <div class="form-group file-upload-group">
         <label for="imgUrl">員工照片</label>
-        <p-fileUpload
-          #fubauto
-          mode="basic"
-          [customUpload]="true"
-          [maxFileSize]="10000000"
-          id="imgUrl"
-          name="image"
-          [auto]="true"
-          chooseLabel="選擇圖片"
-          accept="image/*"
-          (uploadHandler)="onUpload($event)"
-        >
-        </p-fileUpload>
-        <div *ngIf="selectedFile">
-          <p>{{ selectedFile.name }}</p>
+        <div class="file-upload-container">
+          <p-fileUpload
+            #fubauto
+            mode="basic"
+            [customUpload]="true"
+            [maxFileSize]="10000000"
+            id="imgUrl"
+            name="image"
+            [auto]="true"
+            chooseLabel="選擇圖片"
+            accept="image/*"
+            (uploadHandler)="onUpload($event)"
+          >
+          </p-fileUpload>
+          <div *ngIf="selectedFile" class="selected-file-name">
+            <p>{{ selectedFile.name }}</p>
+          </div>
         </div>
       </div>
 

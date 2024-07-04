@@ -12,6 +12,16 @@
   gap: 1rem;
 }
 
+.file-upload-group {
+  display: contents; // 這會使其子元素直接成為 .employee-form 的子元素
+}
+
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .input-container {
   position: relative;
   display: flex;
@@ -50,12 +60,25 @@ input[type="text"], p-fileUpload {
   margin-top: 1rem;
 }
 
-/* PrimeNG specific styles */
-:host ::ng-deep .p-inputtext,
-:host ::ng-deep .p-fileupload-choose {
-  width: 100%;
+.selected-file-name {
+  word-break: break-all;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
 }
 
-:host ::ng-deep .p-fileupload-choose {
-  height: 37px; /* Adjust this value to match your input height */
+/* PrimeNG 特定樣式 */
+:host ::ng-deep {
+  .p-inputtext,
+  .p-fileupload-choose {
+    width: 100%;
+  }
+
+  .p-fileupload-choose {
+    height: 37px; // 調整此值以匹配您的輸入框高度
+  }
+
+  .p-fileupload {
+    width: 100%;
+  }
 }
