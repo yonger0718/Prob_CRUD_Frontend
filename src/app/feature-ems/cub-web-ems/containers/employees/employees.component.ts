@@ -65,6 +65,7 @@ export class EmployeesComponent implements OnInit {
   header: string = '';
   selectedFile: File | null = null;
   storageApi = environment.storageUrl;
+  selectedValidFile: boolean = false;
 
   @ViewChild('fubauto') fileUpload!: FileUpload;
 
@@ -125,14 +126,26 @@ export class EmployeesComponent implements OnInit {
 
   onUpload($event: any) {
     this.selectedFile = $event.files[0];
+    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    // 確認檔案類型符合設定
+    if (this.selectedFile && allowedFileTypes.includes(this.selectedFile.type)) {
+      this.selectedValidFile = true;
+    }
+    else{
+      this.selectedValidFile = false;
+    }
     this.fileUpload.clear(); // 要重新選擇需要重置，要重置需要先去取得ViewChild
   }
   onSubmit() {
+    let msg: string = '確認要送出嗎?';
     if (this.employeeForm.invalid) {
       return;
     }
+    if (!this.selectedValidFile){
+      msg += ' 所選的檔案並不會被儲存。';
+    }
     this.confirmationService.confirm({
-      message: '確定要送出嗎?',
+      message: msg,
       accept: () => {
         const formData: FormData = new FormData();
         formData.append(
@@ -145,7 +158,9 @@ export class EmployeesComponent implements OnInit {
           formData.append(
             'image',
             this.selectedFile,
-            Date.now().toString() + "." + this.selectedFile.name.split('.').pop() //確保不會有奇怪的檔案名稱
+            Date.now().toString() +
+              '.' +
+              this.selectedFile.name.split('.').pop() //確保不會有奇怪的檔案名稱
           );
         }
         if (this.employee.employeeId === undefined) {

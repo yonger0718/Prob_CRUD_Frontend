@@ -177,7 +177,7 @@
 
 <p-dialog
   [(visible)]="employeeDialog"
-  [style]="{ width: '450px' }"
+  [style]="{ width: '500px' }"
   [header]="header"
   [modal]="true"
   class="p-fluid"
@@ -214,7 +214,7 @@
             name="image"
             [auto]="true"
             chooseLabel="選擇圖片"
-            accept="image/*"
+            accept=".jpg, .jpeg, .png, .webp, .gif"
             (uploadHandler)="onUpload($event)"
           >
           </p-fileUpload>
