@@ -8,35 +8,31 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class EmployeeServices {
-  private apiUrl = environment.apiUrl + '/api';
+  private apiUrl = environment.apiUrl + '/api/employee';
 
   constructor(private http: HttpClient) {}
 
   getEmployees(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${this.apiUrl}/employee`);
+    return this.http.get<Employee[]>(`${this.apiUrl}`);
   }
 
   getEmployee(id: number): Observable<Employee> {
-    return this.http.get<Employee>(`${this.apiUrl}/employee/${id}`);
+    return this.http.get<Employee>(`${this.apiUrl}/${id}`);
   }
 
-  addEmployee(employee: Employee): Observable<Employee> {
-    return this.http.post<Employee>(`${this.apiUrl}/employee`, employee);
+  addEmployee(formData: FormData): Observable<Employee> {
+    return this.http.post<Employee>(`${this.apiUrl}`, formData);
   }
 
-  updateEmployee(id: number, employee: Employee): Observable<Employee> {
-    return this.http.post<Employee>(`${this.apiUrl}/employee/${id}`, employee);
+  updateEmployee(id: number, formData: FormData): Observable<Employee> {
+    return this.http.put<Employee>(`${this.apiUrl}/${id}`, formData);
   }
 
   deleteEmployee(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/employee/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  searchEmployees(term: string): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${this.apiUrl}/employee/search/${term}`);
-  }
-
-  searchEmployeesByID(term: number): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${this.apiUrl}/employee/search/${term}`);
+  uploadImage(id: number, file: File): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/upload/${id}`, file);
   }
 }

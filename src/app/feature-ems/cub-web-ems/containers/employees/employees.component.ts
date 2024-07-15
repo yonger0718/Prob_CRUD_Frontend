@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { EmployeeServices } from '../../services/EmployeeServices';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import {
   Employee,
   EmployeeDTO,
@@ -12,6 +12,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import {
   FormBuilder,
   FormGroup,
@@ -22,8 +23,10 @@ import {
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToastModule } from 'primeng/toast';
+import { AvatarModule } from 'primeng/avatar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { validatePID } from '../../utils/validator';
+import { environment } from 'src/environments/environment';
 
 @Component({
   standalone: true,
@@ -42,6 +45,8 @@ import { validatePID } from '../../utils/validator';
     RadioButtonModule,
     ConfirmDialogModule,
     ToastModule,
+    AvatarModule,
+    FileUploadModule,
   ],
 })
 export class EmployeesComponent implements OnInit {
@@ -58,6 +63,11 @@ export class EmployeesComponent implements OnInit {
   gender = Gender; // Enum
   employeeDialog: boolean = false; // 跳出顯示輸入介面
   header: string = '';
+  selectedFile: File | null = null;
+  storageApi = environment.storageUrl;
+  selectedValidFile: boolean = false;
+
+  @ViewChild('fubauto') fileUpload!: FileUpload;
 
   /**
    * 構建表單和他的驗證方法
@@ -66,10 +76,7 @@ export class EmployeesComponent implements OnInit {
   constructor(private formBuilder: FormBuilder) {
     this.employeeForm = this.formBuilder.group({
       employeeName: ['', [Validators.required]],
-      employeePID: [
-        '',
-        [Validators.required, validatePID()],
-      ],
+      employeePID: ['', [Validators.required, validatePID()]],
       employeePhoneNumber: [
         '',
         [Validators.required, Validators.pattern(/^09\d{8}$/)],
@@ -114,17 +121,51 @@ export class EmployeesComponent implements OnInit {
     this.employeeForm.reset();
     this.header = '新增員工資訊';
     this.employeeDialog = true;
+    this.selectedFile = null;
+  }
+
+  onUpload($event: any) {
+    this.selectedFile = $event.files[0];
+    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    // 確認檔案類型符合設定
+    if (this.selectedFile && allowedFileTypes.includes(this.selectedFile.type)) {
+      this.selectedValidFile = true;
+    }
+    else{
+      this.selectedValidFile = false;
+    }
+    this.fileUpload.clear(); // 要重新選擇需要重置，要重置需要先去取得ViewChild
   }
   onSubmit() {
+    let msg: string = '確認要送出嗎?';
     if (this.employeeForm.invalid) {
       return;
     }
+    if (!this.selectedValidFile){
+      msg += ' 所選的檔案並不會被儲存。';
+    }
     this.confirmationService.confirm({
-      message: '確定要送出嗎?',
+      message: msg,
       accept: () => {
+        const formData: FormData = new FormData();
+        formData.append(
+          'employee',
+          new Blob([JSON.stringify(this.employeeForm.value)], {
+            type: 'application/json',
+          })
+        );
+        if (this.selectedFile) {
+          formData.append(
+            'image',
+            this.selectedFile,
+            Date.now().toString() +
+              '.' +
+              this.selectedFile.name.split('.').pop() //確保不會有奇怪的檔案名稱
+          );
+        }
         if (this.employee.employeeId === undefined) {
           // 非修改則不會有employee傳入 -> no default value = undefined
-          this.employeeServices.addEmployee(this.employeeForm.value).subscribe({
+          this.employeeServices.addEmployee(formData).subscribe({
             next: (emp) => {
               this.getEmployees();
               this.messageService.add({
@@ -148,7 +189,7 @@ export class EmployeesComponent implements OnInit {
           });
         } else {
           this.employeeServices
-            .updateEmployee(this.employee.employeeId, this.employeeForm.value)
+            .updateEmployee(this.employee.employeeId, formData)
             .subscribe({
               next: () => {
                 this.getEmployees();
@@ -204,6 +245,7 @@ export class EmployeesComponent implements OnInit {
     this.employeeForm.patchValue(employee);
     this.header = '編輯員工資訊';
     this.employeeDialog = true;
+    this.selectedFile = null;
   }
   deleteSelected() {
     this.confirmationService.confirm({
