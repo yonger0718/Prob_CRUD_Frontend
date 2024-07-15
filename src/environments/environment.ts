@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080',
-  storageUrl: 'https://storage.googleapis.com/prob_test_img/'
+  storageUrl: 'https://storage.googleapis.com/prob_test_img/',
 };
 
 /*
