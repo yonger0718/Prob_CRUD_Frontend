@@ -5,7 +5,7 @@
   - [x] Knowing Angular components, class, template and decorators
   - [x] Data binding
   - [x] Routing
-  - [ ] Events
+  - [x] Events
   - [x] Pipeline
   - [x] API connections
   - [ ] Follow Guideline and refactor code
